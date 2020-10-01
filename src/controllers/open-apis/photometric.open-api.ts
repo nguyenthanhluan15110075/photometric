@@ -12,7 +12,6 @@ export const CREATE_PHOTOMETRIC_RESPONSE: ResponseObject = {
         type: 'object',
         title: 'CreateNewPhotometricCabibnetResponse',
         properties: {
-          _id: {type: 'string'},
           name: {type: 'string'},
           description: {type: 'string'},
           attributes: {
