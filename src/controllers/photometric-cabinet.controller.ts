@@ -1,21 +1,16 @@
 import {
-  Count,
-  CountSchema,
   Filter,
   FilterExcludingWhere,
   repository,
-  Where,
 } from '@loopback/repository';
 import {
   post,
   param,
   get,
   getModelSchemaRef,
-  patch,
   put,
   del,
   requestBody,
-  HttpErrors,
 } from '@loopback/rest';
 import {PhotometricCabinet} from '../models';
 import {PhotometricCabinetRepository} from '../repositories';
