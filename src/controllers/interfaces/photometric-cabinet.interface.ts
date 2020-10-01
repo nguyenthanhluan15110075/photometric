@@ -16,3 +16,14 @@ export interface CreatePhotometricCabinetResponse {
     hardware?: string;
   }
 }
+
+export interface PhotometricCabinetUpdate {
+  name?: string;
+  description?: string;
+  attributes?: {
+    firmware?: string;
+    hardware?: string;
+  }
+  createdAt?: number;
+  updatedAt?: number;
+}

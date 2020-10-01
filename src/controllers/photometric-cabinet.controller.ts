@@ -2,6 +2,9 @@ import {
   Filter,
   FilterExcludingWhere,
   repository,
+  Count,
+  CountSchema,
+  Where,
 } from '@loopback/repository';
 import {
   post,
@@ -11,10 +14,11 @@ import {
   put,
   del,
   requestBody,
+  patch,
 } from '@loopback/rest';
 import {PhotometricCabinet} from '../models';
 import {PhotometricCabinetRepository} from '../repositories';
-import {CREATE_PHOTOMETRIC_BODY} from './open-apis';
+import {CREATE_PHOTOMETRIC_BODY, UPDATE_A_PHOTOMETRIC_BODY} from './open-apis';
 
 // Testing through Swagger on: http://localhost:3000/explorer
 
@@ -38,13 +42,13 @@ export class PhotometricCabinetController {
     @requestBody(CREATE_PHOTOMETRIC_BODY)
     photometricCabinet: Omit<PhotometricCabinet, '_id'>,
   ): Promise<PhotometricCabinet> {
-    const checkName = await this.photometricCabinetRepository.findOne({
+    const existedName = await this.photometricCabinetRepository.findOne({
       where: {
         name: photometricCabinet.name,
       },
     });
-    if (checkName) {
-      console.error('Already have photometric cabinet', checkName.name);
+    if (existedName) {
+      console.error('Already have photometric cabinet', existedName.name);
       throw new Error('Already have photometric cabinet');
       // return null;
     }
@@ -75,27 +79,30 @@ export class PhotometricCabinetController {
     return this.photometricCabinetRepository.find(filter);
   }
 
-  // @patch('/photometric-cabinets', {
-  //   responses: {
-  //     '200': {
-  //       description: 'PhotometricCabinet PATCH success count',
-  //       content: {'application/json': {schema: CountSchema}},
-  //     },
-  //   },
-  // })
-  // async updateAll(
-  //   @requestBody({
-  //     content: {
-  //       'application/json': {
-  //         schema: getModelSchemaRef(PhotometricCabinet, {partial: true}),
-  //       },
-  //     },
-  //   })
-  //   photometricCabinet: PhotometricCabinet,
-  //   @param.where(PhotometricCabinet) where?: Where<PhotometricCabinet>,
-  // ): Promise<Count> {
-  //   return this.photometricCabinetRepository.updateAll(photometricCabinet, where);
-  // }
+  @patch('/photometric-cabinets', {
+    responses: {
+      '200': {
+        description: 'PhotometricCabinet PATCH success count',
+        content: {'application/json': {schema: CountSchema}},
+      },
+    },
+  })
+  async updateAll(
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: getModelSchemaRef(PhotometricCabinet, {partial: true}),
+        },
+      },
+    })
+    photometricCabinet: PhotometricCabinet,
+    @param.where(PhotometricCabinet) where?: Where<PhotometricCabinet>,
+  ): Promise<Count> {
+    return this.photometricCabinetRepository.updateAll(
+      photometricCabinet,
+      where,
+    );
+  }
 
   @get('/photometric-cabinets/{id}', {
     responses: {
@@ -120,26 +127,38 @@ export class PhotometricCabinetController {
     return this.photometricCabinetRepository.findById(_id, filter);
   }
 
-  // @patch('/photometric-cabinets/{id}', {
-  //   responses: {
-  //     '204': {
-  //       description: 'PhotometricCabinet PATCH success',
-  //     },
-  //   },
-  // })
-  // async updateById(
-  //   @param.path.string('id') id: string,
-  //   @requestBody({
-  //     content: {
-  //       'application/json': {
-  //         schema: getModelSchemaRef(PhotometricCabinet, {partial: true}),
-  //       },
-  //     },
-  //   })
-  //   photometricCabinet: PhotometricCabinet,
-  // ): Promise<void> {
-  //   await this.photometricCabinetRepository.updateById(id, photometricCabinet);
-  // }
+  @patch('/photometric-cabinets/{id}', {
+    responses: {
+      '204': {
+        description: 'PhotometricCabinet PATCH success',
+      },
+    },
+  })
+  async updateById(
+    @param.path.string('id') _id: string,
+    @requestBody(UPDATE_A_PHOTOMETRIC_BODY)
+    photometricCabinet: PhotometricCabinet,
+  ): Promise<PhotometricCabinet> {
+    console.log(photometricCabinet);
+
+    if (photometricCabinet.name) {
+      const existedName = await this.photometricCabinetRepository.findOne({
+        where: {name: photometricCabinet.name},
+      });
+
+      if (existedName) {
+        console.error('Already have photometric cabinet', existedName.name);
+        throw new Error('Already have photometric cabinet');
+        // return null;
+      }
+    }
+
+    photometricCabinet.updatedAt = new Date().getTime();
+
+    await this.photometricCabinetRepository.updateById(_id, photometricCabinet);
+
+    return this.photometricCabinetRepository.findById(_id);
+  }
 
   @put('/photometric-cabinets/{id}', {
     responses: {
@@ -152,6 +171,7 @@ export class PhotometricCabinetController {
     @param.path.string('id') id: string,
     @requestBody() photometricCabinet: PhotometricCabinet,
   ): Promise<void> {
+    console.log('Replace content', photometricCabinet);
     await this.photometricCabinetRepository.replaceById(id, photometricCabinet);
   }
 

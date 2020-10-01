@@ -51,3 +51,28 @@ export const CREATE_PHOTOMETRIC_BODY: RequestBodyObject = {
     },
   },
 };
+
+
+export const UPDATE_A_PHOTOMETRIC_BODY: RequestBodyObject = {
+  description: 'Create a new photometric cabinet input data',
+  required: true,
+  content: {
+    'application/json': {
+      schema: {
+        type: 'object',
+        title: 'UpdatePhotometricCabibnetDataInput',
+        properties: {
+          name: {type: 'string'},
+          description: {type: 'string'},
+          attributes: {
+            type: 'object',
+            properties: {
+              firmware: {type: 'string'},
+              hardware: {type: 'string'},
+            },
+          },
+        },
+      },
+    },
+  },
+};
