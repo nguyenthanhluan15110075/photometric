@@ -41,15 +41,21 @@ export class PhotometricCabinet extends Entity {
 
   @property({
     type: 'number',
-    default: (new Date()).getTime(),
+    default: new Date().getTime(),
   })
   createdAt?: number;
 
   @property({
     type: 'number',
-    default: (new Date()).getTime(),
+    default: new Date().getTime(),
   })
-  updatedAt?:number;
+  updatedAt?: number;
+
+  @property({
+    type: 'boolean',
+    default: false,
+  })
+  isDeleted?: boolean;
 
   constructor(data?: Partial<PhotometricCabinet>) {
     super(data);
